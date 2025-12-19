@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: AegisOps
+    datasource:
+    url: ""
+  jpa:
+    hibernate:
+      ddl-auto: none
+  sql:
+    init:
+      mode: never
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    prometheus:
+      enabled: true
