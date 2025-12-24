@@ -11,7 +11,9 @@ import io.aegisops.agent.incident.Incident;
 public class AlertParser {
 
     public Incident parse(Map<String, Object> payload) {
+        @SuppressWarnings("unchecked")
         Map<String, Object> alert = ((List<Map<String, Object>>) payload.get("alerts")).get(0);
+        @SuppressWarnings("unchecked")
         Map<String, String> labels = (Map<String, String>) alert.get("labels");
 
         return Incident.builder()
