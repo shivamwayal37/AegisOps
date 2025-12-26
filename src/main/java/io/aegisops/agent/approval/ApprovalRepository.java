@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-interface ApprovalRepository extends JpaRepository<ApprovalRequest, String> {
+public interface ApprovalRepository extends JpaRepository<ApprovalRequest, String> {
     List<ApprovalRequest> findByStatus(ApprovalRequest.ApprovalStatus status);
     Optional<ApprovalRequest> findByIncidentId(String incidentId);
 }
