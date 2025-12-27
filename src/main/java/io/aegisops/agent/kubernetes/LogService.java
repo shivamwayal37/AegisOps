@@ -28,4 +28,22 @@ public class LogService {
             return "Error fetching logs: " + e.getMessage();
         }
     }
+    
+    public String getContainerLogs(String namespace, String podName, String containerName, int lines) {
+        try {
+            String logs = kubernetesClient.pods()
+                .inNamespace(namespace)
+                .withName(podName)
+                .inContainer(containerName)
+                .tailingLines(lines)
+                .getLog();
+            
+            return logs != null ? logs : "No logs available";
+            
+        } catch (Exception e) {
+            log.warn("Failed to get logs for container {}/{}/{}: {}", 
+                namespace, podName, containerName, e.getMessage());
+            return "Error fetching container logs: " + e.getMessage();
+        }
+    }
 }
