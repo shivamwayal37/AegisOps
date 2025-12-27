@@ -51,4 +51,25 @@ public class EventService {
             return "Error fetching events: " + e.getMessage();
         }
     }
+    
+    public List<Event> getNamespaceEvents(String namespace) {
+        try {
+            return kubernetesClient.v1().events()
+                .inNamespace(namespace)
+                .list()
+                .getItems()
+                .stream()
+                .sorted((e1, e2) -> {
+                    if (e1.getLastTimestamp() == null) return 1;
+                    if (e2.getLastTimestamp() == null) return -1;
+                    return e2.getLastTimestamp().compareTo(e1.getLastTimestamp());
+                })
+                .limit(50)
+                .toList();
+                
+        } catch (Exception e) {
+            log.error("Failed to get events for namespace {}: {}", namespace, e.getMessage());
+            return List.of();
+        }
+    }
 }
