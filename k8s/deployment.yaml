@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aegisops-agent
+  namespace: default
+  labels:
+    app: aegisops-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aegisops-agent
+  template:
+    metadata:
+      labels:
+        app: aegisops-agent
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      serviceAccountName: aegisops-agent
+      containers:
+      - name: agent
+        image: aegisops/agent:1.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        - name: K8S_IN_CLUSTER
+          value: "true"
+        - name: DB_HOST
+          value: "postgres-service"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "aegisops"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: aegisops-secrets
+              key: db-user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: aegisops-secrets
+              key: db-password
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aegisops-secrets
+              key: openai-api-key
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aegisops-agent-service
+  namespace: default
+spec:
+  selector:
+    app: aegisops-agent
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
