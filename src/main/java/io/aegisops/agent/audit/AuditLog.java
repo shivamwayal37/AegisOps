@@ -1,7 +1,15 @@
 package io.aegisops.agent.audit;
 
 import java.time.Instant;
+import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+
+import io.aegisops.agent.analysis.DiagnosisResult;
+import io.aegisops.agent.incident.Incident;
+import io.aegisops.agent.remediation.RemediationResult;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Table(name = "audit_logs")
@@ -23,7 +33,7 @@ import lombok.NoArgsConstructor;
 class AuditLog {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id;
     
     @Column(nullable = false)
