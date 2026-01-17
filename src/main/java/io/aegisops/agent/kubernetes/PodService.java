@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.StatusDetails;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,7 @@ class PodService {
     
     public boolean deletePod(String namespace, String podName) {
         try {
-            List<io.fabric8.kubernetes.api.model.StatusDetails> statusDetails = kubernetesClient.pods()
+            List<StatusDetails> statusDetails = kubernetesClient.pods()
                 .inNamespace(namespace)
                 .withName(podName)
                 .delete();
